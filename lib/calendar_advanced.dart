@@ -22,11 +22,29 @@ enum CalendarMode {
   multiYear,
 }
 
+/// Specifies content to show in a [CalendarAdvanced]'s cell, above the widget
+/// returned by the `calendarCellBuilder` builder.
 class CalendarCellContent {
+  /// In case of timetable [CalendarMode], the `content` will be placed
+  /// starting at `startHour`, if provided.
   final double? startHour;
+
+  /// In case of timetable [CalendarMode], the `content` will be placed
+  /// ending at `endHour`, if provided.
   final double? endHour;
+
+  /// The content to show above the widget returned by the `calendarCellBuilder` builder.
   final Widget content;
+
+  /// [CalendarCellContent]s are placed in a [Row], `flex` defines the relative space
+  /// that every content should take in the [Row]. Defaults to 1.
   final int flex;
+
+  /// Specifies content to show in a [CalendarAdvanced]'s cell, above the widget
+  /// returned by the `calendarCellBuilder` builder.
+  ///
+  /// This is useful in case of use of daily or weekly timetable [CalendarMode],
+  /// to specify hours range in which the content should be placed.
   CalendarCellContent({
     this.startHour,
     this.endHour,
@@ -35,33 +53,48 @@ class CalendarCellContent {
   });
 }
 
-/// A scrolling calendar with selectable squared cells.
+/// A scrolling calendar with monthly, weekly or daily view and eventually picker mode.
 class CalendarAdvanced extends StatefulWidget {
+  /// Use the controller to specify calendar properties and actions, such as
+  /// initial and last date to be visibile, allow date selection or date-range selection,
+  /// set a callback when the dates shown in calendar changes and different others.
+  ///
+  /// NOTE: Remind to correctly `dispose` the controller if provided.
   final CalendarAdvancedController? controller;
 
   /// This builder is used to create single day cells for a given date. If not specified,
   /// a default builder will be used.
   ///
-  /// Use the `mode` argument to return different widgets depending on calendar view.
+  /// * Use the `mode` argument to return different widgets depending on calendar view.
+  /// * Use `isSelected` to know if the cell has been selected by the user
+  /// (note that selection will be enabled only if the `onDateSelected` callback of [CalendarAdvancedController] is provided).
   ///
-  /// Use `isSelected` to know if the cell has been selected by the user
-  /// (note that it will be enabled only if the `onDateSelected` callback is provided)
+  /// If not provided, a default cell builder will be used.
   final Widget Function(DateTime date, bool isSelected, CalendarMode mode)?
       calendarCellBuilder;
 
   /// The builder for the content of a single calendar cell for a given date.
   /// It returns a list of [CalendarCellContent] for cases like timetables
-  /// where for a single cell (i.e. a day), could be shown different widgets.
+  /// where for a single cell (i.e. a day), could be shown different widgets,
+  /// or to specify hours range in which content should be shown.
   ///
-  /// If you want a unique cell view, use `calendarCellBuilder` instead,
-  /// or simply return a list containing one [CalendarCellContent]
-  /// without passing any value for _startHour_ or _endHour_.
+  /// If you want a unique cell view, use `calendarCellBuilder`.
+  ///
+  /// If not provider, no content will be shown.
   final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)?
       calendarCellContentBuilder;
 
+  /// The builder for day column headers. Usually, this should display the name
+  /// of the day (i.e. monday, tuesday).
+  ///
+  ///  If not provided, a default day header builder will be used.
   final Widget Function(DateTime date, CalendarMode mode)?
       calendarDayHeaderBuilder;
 
+  /// The builder for calendar header. Usually, this should display the month
+  /// or buttons to execute actions on the calendar (i.e. scrolling dates).
+  ///
+  /// If not provided, a default calendar header will be used.
   final Widget Function(DateTime date, CalendarMode mode)?
       calendarHeaderBuilder;
 
