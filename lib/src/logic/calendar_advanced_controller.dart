@@ -5,13 +5,29 @@ import '../../utils/utility.dart';
 
 import '../../utils/helpers/date_helper.dart';
 
+/// This controller manages the [CalendarAdvanced] widget properties and actions.
 class CalendarAdvancedController extends ChangeNotifier {
+  /// The initial date of the calendar, before which calendar cannot be scrolled.
   final DateTime? startDate;
+
+  /// The last date of the calendar, after which calendar cannot be scrolled.
   final DateTime? endDate;
+
+  /// The initial hour of the calendar timetable. Defaults to 9.
   final double startHour;
+
+  /// The last hour of the calendar timetable. Defaults to 18.
   final double endHour;
+
+  /// Used to specify days to hide in the calendar (i.e. weekends).
+  ///
+  /// Days to hide must be provided as [int]. You can use [DateTime.sunday] for example.
   final List<int> hiddenWeekdays;
+
+  /// The date that should be visible and highlighted in calendar once initialized. Defaults to today.
   late final DateTime initialDate;
+
+  /// The initial mode of the calendar. Defaults to [CalendarMode.week].
   final CalendarMode initialMode;
 
   /// When the user selects a date, this method is called
@@ -19,19 +35,42 @@ class CalendarAdvancedController extends ChangeNotifier {
   ///
   /// If this is not provided, the calendar will be only in read mode.
   final void Function(DateTime date)? onSelectDate;
+
+  /// When the user selects a date range, this method is called
+  /// to take appropriate actions.
+  ///
+  /// If both this and `onSelectDate` are provided, this will be always used.
   final void Function(DateTime startDate, DateTime endDate)? onSelectDateRange;
 
-  /// If not `null`, the calendar will open with this date selected.
-  /// It defaults to `null`, so the calendar will open with the current date selected.
+  /// The date that should be selected once the calendar is initialized.
+  ///
+  /// This will be considered only if `onSelectDate` or `onSelectDateRange` is not _null_.
   DateTime? selectedDate;
+
+  /// The date that should be selected as last date of range once the calendar is initialized.
+  ///
+  /// This will be considered only if `onSelectDateRange` is not _null_.
   DateTime? selectedEndDate;
 
+  /// When the user selects a time range from calendar in timetable mode, this method is called
+  /// to take appropriate actions.
+  ///
+  /// If this is not provided, the timetable will be only in read mode.
   final void Function(DateTime initialDateHour, DateTime lastDateHour)?
       onSelectTimeSlot;
+
+  /// When the controller fires a scrolling event (so dates shown in the calendar change),
+  /// this method is called to take appropriate actions (i.e. updating content shown in the calendar
+  /// after calling an API).
   final Future<void> Function(
           CalendarMode mode, DateTime startDate, DateTime endDate)?
       onScrollCalendar;
 
+  /// This controller manages the [CalendarAdvanced] widget properties and actions.
+  ///
+  /// You can specify dates to be visibile in the calendar, callbacks for date selection,
+  /// date-range selections and calendar scrolling, as well as use it to make actions
+  /// on the calendar such as changing [CalendarMode] or visible date.
   CalendarAdvancedController({
     this.startDate,
     this.endDate,
@@ -58,15 +97,21 @@ class CalendarAdvancedController extends ChangeNotifier {
 
   late DateTime _firstVisibleDate;
   late DateTime _lastVisibleDate;
+
+  /// The [CalendarMode] actually used by the [CalendarAdvanced].
   late CalendarMode mode;
+
+  /// The date or month visible in the [CalendarAdvanced].
   late DateTime visibleDate;
 
+  /// If _true_, the current [CalendarMode] is with timetable.
   bool get isWithTimetables =>
       mode == CalendarMode.dayWithTimetable ||
       mode == CalendarMode.weekWithTimetable;
 
   bool _modeChangedByPicker = false;
 
+  /// Returns a [String] representing the current `visibleDate`.
   String headerTitleForVisibleDate() {
     switch (mode) {
       case CalendarMode.day:
@@ -110,6 +155,9 @@ class CalendarAdvancedController extends ChangeNotifier {
     _makeDateVisible(currentDate);
   }
 
+  /// Returns _true_ if the provided date has been selected by the user.
+  ///
+  /// This can be useful for cell styling purposes.
   bool isDateSelected(DateTime date) {
     switch (mode) {
       case CalendarMode.day:
@@ -130,6 +178,10 @@ class CalendarAdvancedController extends ChangeNotifier {
     }
   }
 
+  /// Returns _true_ if the provided date is between initial date and last date
+  /// selected by the user when picking a date range.
+  ///
+  /// This can be useful for cell styling purposes.
   bool isDateInSelectionRange(DateTime date) {
     if (selectedDate == null || selectedEndDate == null) {
       return false;
@@ -138,9 +190,16 @@ class CalendarAdvancedController extends ChangeNotifier {
         date.isDateBefore(selectedEndDate!);
   }
 
+  /// Returns _true_ if cells should be selectable.
   bool shouldAllowSelection() =>
       onSelectDate != null || onSelectDateRange != null;
 
+  /// Select the provided date, updating the calendar UI. Furthermore,
+  /// fires the callback set by the user (either single date or date ragne).
+  ///
+  /// If previously the method [CalendarAdvancedController.setMode] was called with
+  /// the parameter `changedByPicker` set to _true_, this method will not call
+  /// the callback for selected date, but will updated the calendar mode accordingly.
   void selectDate(DateTime date) {
     if (_modeChangedByPicker) {
       selectedDate = date;
@@ -183,6 +242,11 @@ class CalendarAdvancedController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Sets the [CalendarMode] and updates the calendar UI accordingly.
+  ///
+  /// If `changedByPicker` is set to _true_, when selecting a date in year or multi-year view,
+  /// the calendar will behave like a picker and will cange the [CalendarMode] to select
+  /// a specific date.
   void setMode(
     CalendarMode mode, {
     bool changedByPicker = false,
@@ -243,6 +307,8 @@ class CalendarAdvancedController extends ChangeNotifier {
     }
   }
 
+  /// Evaluate if the calendar can be scrolled to show more dates backward depending
+  /// on calendar `startDate`.
   bool canGoBackward() {
     if (startDate == null) {
       return true;
@@ -251,6 +317,8 @@ class CalendarAdvancedController extends ChangeNotifier {
     return newDate.isDateAfter(startDate ?? DateTime.now());
   }
 
+  /// Evaluate if the calendar can be scrolled to show more dates forward depending
+  /// on calendar `endDate`.
   bool canGoForkward() {
     if (endDate == null) {
       return true;
@@ -259,18 +327,22 @@ class CalendarAdvancedController extends ChangeNotifier {
     return newDate.isDateBefore(endDate ?? DateTime.now());
   }
 
+  /// Scrolls the calendar backward depending on [CalendarMode]
   void goBackward() {
     _makeDateVisible(_evaluateNewDateToBeVisible(forward: false));
   }
 
+  /// Scrolls the calendar forward depending on [CalendarMode]
   void goForward() {
     _makeDateVisible(_evaluateNewDateToBeVisible(forward: true));
   }
 
+  /// Scrolls the calendar to show today and updates dates accordingly.
   void goToToday() {
     goToDate(DateTime.now());
   }
 
+  /// Scrolls the calendar to show the specified date and updates dates accordingly.
   void goToDate(DateTime date) {
     _makeDateVisible(date);
   }
@@ -314,6 +386,7 @@ class CalendarAdvancedController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns the list of visible dates in the calendar for the current [CalendarMode].
   List<DateTime> getVisibleDates() {
     List<DateTime> dates = [];
 
@@ -356,6 +429,7 @@ class CalendarAdvancedController extends ChangeNotifier {
     return dates;
   }
 
+  /// Returns the list of visible hours in the calendar timetable for the current [CalendarMode].
   List<String> getTimetableHours() {
     List<String> hours = [];
     int index = 0;
@@ -367,6 +441,7 @@ class CalendarAdvancedController extends ChangeNotifier {
     return hours;
   }
 
+  /// Reload the calendar builder and `onScrollCalendar` callback for the current dates.
   Future<void> reloadCurrentDates() async {
     await onScrollCalendar?.call(mode, _firstVisibleDate, _lastVisibleDate);
     notifyListeners();
