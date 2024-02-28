@@ -202,7 +202,6 @@ class CalendarAdvancedController extends ChangeNotifier {
   /// the callback for selected date, but will updated the calendar mode accordingly.
   void selectDate(DateTime date) {
     if (_modeChangedByPicker) {
-      selectedDate = date;
       switch (mode) {
         case CalendarMode.day:
         case CalendarMode.dayWithTimetable:
@@ -210,14 +209,16 @@ class CalendarAdvancedController extends ChangeNotifier {
         case CalendarMode.weekWithTimetable:
         case CalendarMode.month:
           _modeChangedByPicker = false;
+          _makeDateVisible(date);
         case CalendarMode.year:
           _modeChangedByPicker = initialMode != CalendarMode.month;
-          setMode(CalendarMode.month, changedByPicker: _modeChangedByPicker);
+          setMode(CalendarMode.month,
+              changedByPicker: _modeChangedByPicker, dateToBeVisible: date);
         case CalendarMode.multiYear:
           _modeChangedByPicker = initialMode != CalendarMode.year;
-          setMode(CalendarMode.year, changedByPicker: _modeChangedByPicker);
+          setMode(CalendarMode.year,
+              changedByPicker: _modeChangedByPicker, dateToBeVisible: date);
       }
-      notifyListeners();
       return;
     }
 
@@ -250,10 +251,11 @@ class CalendarAdvancedController extends ChangeNotifier {
   void setMode(
     CalendarMode mode, {
     bool changedByPicker = false,
+    DateTime? dateToBeVisible,
   }) {
     _modeChangedByPicker = changedByPicker;
     this.mode = mode;
-    _makeDateVisible(selectedDate ?? initialDate);
+    _makeDateVisible(dateToBeVisible ?? selectedDate ?? initialDate);
   }
 
   DateTime _evaluateNewDateToBeVisible({bool forward = true}) {
