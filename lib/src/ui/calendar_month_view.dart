@@ -59,16 +59,13 @@ class CalendarMonthView extends StatelessWidget {
       return Column(
         children: List.generate(
           numberOfWeeks.ceil(),
-          (index) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                daysInWeek,
-                (rowIndex) => Expanded(
-                  child: _cellBuilder(
-                    dates[daysInWeek * index + rowIndex],
-                  ),
+          (index) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              daysInWeek,
+              (rowIndex) => Expanded(
+                child: _cellBuilder(
+                  dates[daysInWeek * index + rowIndex],
                 ),
               ),
             ),
