@@ -27,9 +27,6 @@ class CalendarMonthView extends StatelessWidget {
         const Divider(
           height: 0,
         ),
-        const SizedBox(
-          height: 10,
-        ),
         _calendarDates(dates: dates),
       ],
     );
@@ -45,8 +42,7 @@ class CalendarMonthView extends StatelessWidget {
         children: List.generate(
           headerDates.length,
           (index) => Expanded(
-            child: calendarDayHeaderBuilder(
-                headerDates[index],
+            child: calendarDayHeaderBuilder(headerDates[index],
                 context.read<CalendarAdvancedController>().mode),
           ),
         ),
@@ -56,8 +52,7 @@ class CalendarMonthView extends StatelessWidget {
 
   Widget _calendarDates({required List<DateTime> dates}) {
     return Builder(builder: (context) {
-      final daysInWeek =
-          DateTime.daysPerWeek -
+      final daysInWeek = DateTime.daysPerWeek -
           context.read<CalendarAdvancedController>().hiddenWeekdays.length;
       var numberOfWeeks = dates.length / daysInWeek;
 
@@ -106,14 +101,13 @@ class CalendarMonthView extends StatelessWidget {
                 context.read<CalendarAdvancedController>().mode),
           ),
           Row(
-              children: List.generate(
-                  cellContent.length,
-                  (index) => Expanded(
-                      flex: cellContent[index].flex,
-                      child: cellContent[index].content)),
-            ),
-          ],
-        
+            children: List.generate(
+                cellContent.length,
+                (index) => Expanded(
+                    flex: cellContent[index].flex,
+                    child: cellContent[index].content)),
+          ),
+        ],
       );
     });
   }

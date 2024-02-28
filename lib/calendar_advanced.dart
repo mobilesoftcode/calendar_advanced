@@ -11,6 +11,9 @@ import 'src/ui/calendar_day_view.dart';
 import 'src/ui/calendar_month_view.dart';
 
 export 'src/logic/calendar_advanced_controller.dart';
+export 'src/ui/default_components/default_calendar_cell.dart';
+export 'src/ui/default_components/default_calendar_header.dart';
+export 'src/ui/default_components/default_calendar_day_header.dart';
 
 enum CalendarMode {
   day,
