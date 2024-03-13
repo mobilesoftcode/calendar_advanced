@@ -68,12 +68,13 @@ class CalendarAdvanced extends StatefulWidget {
   /// This builder is used to create single day cells for a given date. If not specified,
   /// a default builder will be used.
   ///
-  /// * Use the `mode` argument to return different widgets depending on calendar view.
-  /// * Use `isSelected` to know if the cell has been selected by the user
+  /// Using the `controller` you can retrieve:
+  /// * `mode` to return different widgets depending on calendar view.
+  /// * `isDateSelected()` to know if the cell has been selected by the user
   /// (note that selection will be enabled only if the `onDateSelected` callback of [CalendarAdvancedController] is provided).
   ///
   /// If not provided, a default cell builder will be used.
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)?
+  final Widget Function(DateTime date, CalendarAdvancedController controller)?
       calendarCellBuilder;
 
   /// The builder for the content of a single calendar cell for a given date.
@@ -84,21 +85,22 @@ class CalendarAdvanced extends StatefulWidget {
   /// If you want a unique cell view, use `calendarCellBuilder`.
   ///
   /// If not provider, no content will be shown.
-  final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)?
+  final List<CalendarCellContent> Function(
+          DateTime date, CalendarAdvancedController controller)?
       calendarCellContentBuilder;
 
   /// The builder for day column headers. Usually, this should display the name
   /// of the day (i.e. monday, tuesday).
   ///
   ///  If not provided, a default day header builder will be used.
-  final Widget Function(DateTime date, CalendarMode mode)?
+  final Widget Function(DateTime date, CalendarAdvancedController controller)?
       calendarDayHeaderBuilder;
 
   /// The builder for calendar header. Usually, this should display the month
   /// or buttons to execute actions on the calendar (i.e. scrolling dates).
   ///
   /// If not provided, a default calendar header will be used.
-  final Widget Function(DateTime date, CalendarMode mode)?
+  final Widget Function(DateTime date, CalendarAdvancedController controller)?
       calendarHeaderBuilder;
 
   /// A scrolling calendar with eventually selectable cells.
@@ -189,7 +191,7 @@ class _CalendarAdvancedState extends State<CalendarAdvanced>
             children: [
               widget.calendarHeaderBuilder?.call(
                       context.read<CalendarAdvancedController>().visibleDate,
-                      mode) ??
+                      context.read<CalendarAdvancedController>()) ??
                   DefaultCalendarHeader.builder(
                       context.watch<CalendarAdvancedController>()),
               child,

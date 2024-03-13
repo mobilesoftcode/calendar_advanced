@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import '../../calendar_advanced.dart';
 
 class CalendarMonthView extends StatelessWidget {
-  final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)
+  final List<CalendarCellContent> Function(
+          DateTime date, CalendarAdvancedController controller)
       calendarCellContentBuilder;
-  final Widget Function(DateTime date, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarDayHeaderBuilder;
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
 
   const CalendarMonthView({
@@ -42,8 +43,8 @@ class CalendarMonthView extends StatelessWidget {
         children: List.generate(
           headerDates.length,
           (index) => Expanded(
-            child: calendarDayHeaderBuilder(headerDates[index],
-                context.read<CalendarAdvancedController>().mode),
+            child: calendarDayHeaderBuilder(
+                headerDates[index], context.read<CalendarAdvancedController>()),
           ),
         ),
       );
@@ -78,7 +79,7 @@ class CalendarMonthView extends StatelessWidget {
   Widget _cellBuilder(DateTime date) {
     return Builder(builder: (context) {
       final cellContent = calendarCellContentBuilder(
-          date, context.read<CalendarAdvancedController>().mode);
+          date, context.read<CalendarAdvancedController>());
 
       return Stack(
         alignment: Alignment.center,
@@ -93,9 +94,7 @@ class CalendarMonthView extends StatelessWidget {
                   }
                 : null,
             child: calendarCellBuilder(
-                date,
-                context.read<CalendarAdvancedController>().isDateSelected(date),
-                context.read<CalendarAdvancedController>().mode),
+                date, context.read<CalendarAdvancedController>()),
           ),
           Row(
             children: List.generate(

@@ -6,11 +6,12 @@ import 'timetable/calendar_timetable_background_view.dart';
 import 'timetable/calendar_timetable_content_view.dart';
 
 class CalendarDayView extends StatelessWidget {
-  final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)
+  final List<CalendarCellContent> Function(
+          DateTime date, CalendarAdvancedController controller)
       calendarCellContentBuilder;
-  final Widget Function(DateTime date, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarDayHeaderBuilder;
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
   final bool withTimetable;
 
@@ -45,7 +46,7 @@ class CalendarDayView extends StatelessWidget {
   Widget _calendarHeader({required DateTime date}) {
     return Builder(builder: (context) {
       return calendarDayHeaderBuilder(
-          date, context.read<CalendarAdvancedController>().mode);
+          date, context.read<CalendarAdvancedController>());
     });
   }
 
@@ -66,7 +67,7 @@ class CalendarDayView extends StatelessWidget {
   Widget _cellBuilder(DateTime date) {
     return Builder(builder: (context) {
       final cellContent = calendarCellContentBuilder(
-          date, context.read<CalendarAdvancedController>().mode);
+          date, context.read<CalendarAdvancedController>());
 
       return Stack(
         alignment: Alignment.center,
@@ -81,9 +82,7 @@ class CalendarDayView extends StatelessWidget {
                   }
                 : null,
             child: calendarCellBuilder(
-                date,
-                context.read<CalendarAdvancedController>().isDateSelected(date),
-                context.read<CalendarAdvancedController>().mode),
+                date, context.read<CalendarAdvancedController>()),
           ),
           Row(
             children: List.generate(

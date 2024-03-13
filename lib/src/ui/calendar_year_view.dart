@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../calendar_advanced.dart';
 
 class CalendarYearView extends StatelessWidget {
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
 
   const CalendarYearView({
@@ -60,9 +60,7 @@ class CalendarYearView extends StatelessWidget {
               }
             : null,
         child: calendarCellBuilder(
-            date,
-            context.read<CalendarAdvancedController>().isDateSelected(date),
-            context.read<CalendarAdvancedController>().mode),
+            date, context.read<CalendarAdvancedController>()),
       );
     });
   }
