@@ -85,8 +85,11 @@ class CalendarAdvancedController extends ChangeNotifier {
     this.onSelectTimeSlot,
     this.onSelectDate,
     this.onSelectDateRange,
-  })  : assert((startDate ?? DateTime.now()).isDateBefore(
-            (endDate ?? DateTime.now().add(const Duration(days: 1))))),
+  })  : assert((startDate != null &&
+                endDate != null &&
+                startDate.isDateBefore((endDate))) ||
+            startDate == null ||
+            endDate == null),
         assert(hiddenWeekdays.length < 7),
         assert(hiddenWeekdays.every((element) => element <= 7)),
         assert(startHour < endHour) {
@@ -191,8 +194,10 @@ class CalendarAdvancedController extends ChangeNotifier {
   }
 
   /// Returns _true_ if cells should be selectable.
-  bool shouldAllowSelection() =>
-      onSelectDate != null || onSelectDateRange != null;
+  bool shouldAllowSelection(DateTime date) =>
+      (onSelectDate != null || onSelectDateRange != null) &&
+      (startDate == null || date.isAfter(startDate!)) &&
+      (endDate == null || date.isBefore(endDate!));
 
   /// Select the provided date, updating the calendar UI. Furthermore,
   /// fires the callback set by the user (either single date or date ragne).

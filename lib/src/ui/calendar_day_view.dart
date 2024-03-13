@@ -64,7 +64,6 @@ class CalendarDayView extends StatelessWidget {
   }
 
   Widget _cellBuilder(DateTime date) {
-
     return Builder(builder: (context) {
       final cellContent = calendarCellContentBuilder(
           date, context.read<CalendarAdvancedController>().mode);
@@ -76,7 +75,7 @@ class CalendarDayView extends StatelessWidget {
             customBorder: const CircleBorder(),
             onTap: context
                     .read<CalendarAdvancedController>()
-                    .shouldAllowSelection()
+                    .shouldAllowSelection(date)
                 ? () {
                     context.read<CalendarAdvancedController>().selectDate(date);
                   }

@@ -52,7 +52,9 @@ class CalendarYearView extends StatelessWidget {
     return Builder(builder: (context) {
       return InkWell(
         customBorder: const CircleBorder(),
-        onTap: context.read<CalendarAdvancedController>().shouldAllowSelection()
+        onTap: context
+                .read<CalendarAdvancedController>()
+                .shouldAllowSelection(date)
             ? () {
                 context.read<CalendarAdvancedController>().selectDate(date);
               }

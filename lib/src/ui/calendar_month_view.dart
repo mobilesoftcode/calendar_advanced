@@ -87,7 +87,7 @@ class CalendarMonthView extends StatelessWidget {
             customBorder: const CircleBorder(),
             onTap: context
                     .read<CalendarAdvancedController>()
-                    .shouldAllowSelection()
+                    .shouldAllowSelection(date)
                 ? () {
                     context.read<CalendarAdvancedController>().selectDate(date);
                   }
