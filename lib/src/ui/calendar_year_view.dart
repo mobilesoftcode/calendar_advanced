@@ -20,9 +20,6 @@ class CalendarYearView extends StatelessWidget {
         const Divider(
           height: 0,
         ),
-        const SizedBox(
-          height: 10,
-        ),
         _calendarDates(dates: dates),
       ],
     );
@@ -35,16 +32,13 @@ class CalendarYearView extends StatelessWidget {
       return Column(
         children: List.generate(
           4,
-          (index) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                numberOfMonthsPerRow,
-                (rowIndex) => Expanded(
-                  child: _cellBuilder(
-                    dates[numberOfMonthsPerRow * index + rowIndex],
-                  ),
+          (index) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              numberOfMonthsPerRow,
+              (rowIndex) => Expanded(
+                child: _cellBuilder(
+                  dates[numberOfMonthsPerRow * index + rowIndex],
                 ),
               ),
             ),
