@@ -20,24 +20,47 @@ class DefaultCalendarHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50,
-      child: Stack(
-        alignment: Alignment.center,
+      child: Row(
         children: [
-          Row(
-            children: [
-              _todayIconWidget(),
-              const Spacer(),
-              _leftIconWidget(),
-              _rightIconWidget(),
-              controller.mode == CalendarMode.month
-                  ? _weekIconWidget()
-                  : _monthIconWidget(),
-            ],
+          _todayIconWidget(),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _leftIconWidget(),
+                Flexible(
+                  child: _calendarTitle(),
+                ),
+                _rightIconWidget(),
+              ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 20, right: 20),
+          controller.mode == CalendarMode.month
+              ? _weekIconWidget()
+              : _monthIconWidget(),
+        ],
+      ),
+    );
+  }
+
+  Widget _calendarTitle() {
+    return Builder(builder: (context) {
+      return MergeSemantics(
+        child: Semantics(
+          value: "Cambia modalità calendario",
+          hint: "Tocca due volte per cambiare la vista del calendario",
+          onTap: () {
+            controller.setMode(
+                controller.mode == CalendarMode.year
+                    ? CalendarMode.multiYear
+                    : CalendarMode.year,
+                changedByPicker: true);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(3),
             child: Material(
               child: InkWell(
+                borderRadius: BorderRadius.circular(5),
                 onTap: () {
                   controller.setMode(
                       controller.mode == CalendarMode.year
@@ -46,18 +69,19 @@ class DefaultCalendarHeader extends StatelessWidget {
                       changedByPicker: true);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(5),
                   child: Text(
                     controller.headerTitleForVisibleDate(),
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
               ),
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    });
   }
 
   /// The widget to indicate the "select today" action.
@@ -76,7 +100,7 @@ class DefaultCalendarHeader extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(5),
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(17, 12, 17, 12),
+                padding: EdgeInsets.all(12),
                 child: Icon(Icons.today_outlined),
               ),
               onTap: () {
@@ -105,7 +129,7 @@ class DefaultCalendarHeader extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(5),
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(17, 12, 17, 12),
+                padding: EdgeInsets.all(12),
                 child: Icon(Icons.calendar_view_week),
               ),
               onTap: () {
@@ -134,7 +158,7 @@ class DefaultCalendarHeader extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(5),
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(17, 12, 17, 12),
+                padding: EdgeInsets.all(12),
                 child: Icon(Icons.calendar_month),
               ),
               onTap: () {
@@ -159,7 +183,7 @@ class DefaultCalendarHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
               onTap: controller.canGoBackward() ? controller.goBackward : null,
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(17, 12, 15, 12),
+                padding: EdgeInsets.all(12),
                 child: Icon(Icons.chevron_left),
               ),
             ),
@@ -171,15 +195,15 @@ class DefaultCalendarHeader extends StatelessWidget {
   /// If tapped, fires appropriate actions, and scroll calendar dates forward.
   Widget _rightIconWidget() {
     return Opacity(
-      opacity: controller.canGoForkward() ? 1 : 0.5,
+      opacity: controller.canGoForward() ? 1 : 0.5,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(1, 3, 3, 3),
         child: Material(
           child: InkWell(
             borderRadius: BorderRadius.circular(5),
-            onTap: controller.canGoForkward() ? controller.goForward : null,
+            onTap: controller.canGoForward() ? controller.goForward : null,
             child: const Padding(
-              padding: EdgeInsets.fromLTRB(15, 12, 17, 12),
+              padding: EdgeInsets.all(12),
               child: Icon(Icons.chevron_right),
             ),
           ),
