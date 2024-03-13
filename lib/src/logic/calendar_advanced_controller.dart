@@ -345,8 +345,13 @@ class CalendarAdvancedController extends ChangeNotifier {
   }
 
   /// Scrolls the calendar to show today and updates dates accordingly.
-  void goToToday() {
-    goToDate(DateTime.now());
+  void goToToday({bool selectDay = false}) {
+    final now = DateTime.now();
+    if (selectDay && shouldAllowSelection(now)) {
+      selectDate(now);
+    } else {
+      goToDate(now);
+    }
   }
 
   /// Scrolls the calendar to show the specified date and updates dates accordingly.
