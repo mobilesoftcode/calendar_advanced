@@ -5,15 +5,18 @@ import '../../../calendar_advanced.dart';
 
 class DefaultCalendarDayHeader extends StatelessWidget {
   final DateTime date;
-  final CalendarMode mode;
+  final CalendarAdvancedController controller;
   const DefaultCalendarDayHeader({
     super.key,
     required this.date,
-    required this.mode,
+    required this.controller,
   });
 
-  static Widget builder(DateTime date, CalendarMode mode) {
-    return DefaultCalendarDayHeader(date: date, mode: mode);
+  static Widget builder(DateTime date, CalendarAdvancedController controller) {
+    return DefaultCalendarDayHeader(
+      date: date,
+      controller: controller,
+    );
   }
 
   @override

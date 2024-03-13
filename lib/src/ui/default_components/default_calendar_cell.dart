@@ -6,20 +6,17 @@ import '../../../calendar_advanced.dart';
 
 class DefaultCalendarCell extends StatelessWidget {
   final DateTime date;
-  final bool selected;
-  final CalendarMode mode;
+  final CalendarAdvancedController controller;
   const DefaultCalendarCell({
     super.key,
     required this.date,
-    this.selected = false,
-    required this.mode,
+    required this.controller,
   });
 
-  static Widget builder(DateTime date, bool selected, CalendarMode mode) {
+  static Widget builder(DateTime date, CalendarAdvancedController controller) {
     return DefaultCalendarCell(
       date: date,
-      selected: selected,
-      mode: mode,
+      controller: controller,
     );
   }
 
@@ -30,7 +27,7 @@ class DefaultCalendarCell extends StatelessWidget {
     }
 
     late String dateLabel;
-    switch (mode) {
+    switch (controller.mode) {
       case CalendarMode.day:
       case CalendarMode.dayWithTimetable:
       case CalendarMode.week:
@@ -43,13 +40,17 @@ class DefaultCalendarCell extends StatelessWidget {
         dateLabel = date.year.toString();
     }
 
+    final selected = controller.isDateSelected(date);
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 100),
       height: 50,
       width: 50,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: context.read<CalendarAdvancedController>().initialDate == date
+        border: context.read<CalendarAdvancedController>().initialDate ==
+                    date &&
+                context.read<CalendarAdvancedController>().highlightInitialDate
             ? Border.all(color: Theme.of(context).primaryColor)
             : null,
         color: selected

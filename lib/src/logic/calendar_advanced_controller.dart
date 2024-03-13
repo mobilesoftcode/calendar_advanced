@@ -27,6 +27,12 @@ class CalendarAdvancedController extends ChangeNotifier {
   /// The date that should be visible and highlighted in calendar once initialized. Defaults to today.
   late final DateTime initialDate;
 
+  /// Specify if `initialDate` should be highlighted by default in calendar, when using default cell buidler
+  final bool highlightInitialDate;
+
+  /// Specify if enable swipe gestures in calendar
+  final bool enableSwipeGestures;
+
   /// The initial mode of the calendar. Defaults to [CalendarMode.week].
   final CalendarMode initialMode;
 
@@ -77,6 +83,8 @@ class CalendarAdvancedController extends ChangeNotifier {
     this.selectedDate,
     this.selectedEndDate,
     DateTime? initialDate,
+    this.highlightInitialDate = true,
+    this.enableSwipeGestures = true,
     this.hiddenWeekdays = const [],
     this.startHour = 9,
     this.endHour = 18,
@@ -85,8 +93,11 @@ class CalendarAdvancedController extends ChangeNotifier {
     this.onSelectTimeSlot,
     this.onSelectDate,
     this.onSelectDateRange,
-  })  : assert((startDate ?? DateTime.now()).isDateBefore(
-            (endDate ?? DateTime.now().add(const Duration(days: 1))))),
+  })  : assert((startDate != null &&
+                endDate != null &&
+                startDate.isDateBefore((endDate))) ||
+            startDate == null ||
+            endDate == null),
         assert(hiddenWeekdays.length < 7),
         assert(hiddenWeekdays.every((element) => element <= 7)),
         assert(startHour < endHour) {
@@ -191,8 +202,10 @@ class CalendarAdvancedController extends ChangeNotifier {
   }
 
   /// Returns _true_ if cells should be selectable.
-  bool shouldAllowSelection() =>
-      onSelectDate != null || onSelectDateRange != null;
+  bool shouldAllowSelection(DateTime date) =>
+      (onSelectDate != null || onSelectDateRange != null) &&
+      (startDate == null || date.isAfter(startDate!)) &&
+      (endDate == null || date.isBefore(endDate!));
 
   /// Select the provided date, updating the calendar UI. Furthermore,
   /// fires the callback set by the user (either single date or date ragne).
@@ -202,7 +215,6 @@ class CalendarAdvancedController extends ChangeNotifier {
   /// the callback for selected date, but will updated the calendar mode accordingly.
   void selectDate(DateTime date) {
     if (_modeChangedByPicker) {
-      selectedDate = date;
       switch (mode) {
         case CalendarMode.day:
         case CalendarMode.dayWithTimetable:
@@ -210,14 +222,16 @@ class CalendarAdvancedController extends ChangeNotifier {
         case CalendarMode.weekWithTimetable:
         case CalendarMode.month:
           _modeChangedByPicker = false;
+          _makeDateVisible(date);
         case CalendarMode.year:
           _modeChangedByPicker = initialMode != CalendarMode.month;
-          setMode(CalendarMode.month, changedByPicker: _modeChangedByPicker);
+          setMode(CalendarMode.month,
+              changedByPicker: _modeChangedByPicker, dateToBeVisible: date);
         case CalendarMode.multiYear:
           _modeChangedByPicker = initialMode != CalendarMode.year;
-          setMode(CalendarMode.year, changedByPicker: _modeChangedByPicker);
+          setMode(CalendarMode.year,
+              changedByPicker: _modeChangedByPicker, dateToBeVisible: date);
       }
-      notifyListeners();
       return;
     }
 
@@ -250,10 +264,11 @@ class CalendarAdvancedController extends ChangeNotifier {
   void setMode(
     CalendarMode mode, {
     bool changedByPicker = false,
+    DateTime? dateToBeVisible,
   }) {
     _modeChangedByPicker = changedByPicker;
     this.mode = mode;
-    _makeDateVisible(selectedDate ?? initialDate);
+    _makeDateVisible(dateToBeVisible ?? selectedDate ?? initialDate);
   }
 
   DateTime _evaluateNewDateToBeVisible({bool forward = true}) {
@@ -319,7 +334,7 @@ class CalendarAdvancedController extends ChangeNotifier {
 
   /// Evaluate if the calendar can be scrolled to show more dates forward depending
   /// on calendar `endDate`.
-  bool canGoForkward() {
+  bool canGoForward() {
     if (endDate == null) {
       return true;
     }
@@ -338,8 +353,13 @@ class CalendarAdvancedController extends ChangeNotifier {
   }
 
   /// Scrolls the calendar to show today and updates dates accordingly.
-  void goToToday() {
-    goToDate(DateTime.now());
+  void goToToday({bool selectDay = false}) {
+    final now = DateTime.now();
+    if (selectDay && shouldAllowSelection(now)) {
+      selectDate(now);
+    } else {
+      goToDate(now);
+    }
   }
 
   /// Scrolls the calendar to show the specified date and updates dates accordingly.

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../calendar_advanced.dart';
 
 class CalendarYearView extends StatelessWidget {
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
 
   const CalendarYearView({
@@ -20,9 +20,6 @@ class CalendarYearView extends StatelessWidget {
         const Divider(
           height: 0,
         ),
-        const SizedBox(
-          height: 10,
-        ),
         _calendarDates(dates: dates),
       ],
     );
@@ -35,16 +32,13 @@ class CalendarYearView extends StatelessWidget {
       return Column(
         children: List.generate(
           4,
-          (index) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                numberOfMonthsPerRow,
-                (rowIndex) => Expanded(
-                  child: _cellBuilder(
-                    dates[numberOfMonthsPerRow * index + rowIndex],
-                  ),
+          (index) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              numberOfMonthsPerRow,
+              (rowIndex) => Expanded(
+                child: _cellBuilder(
+                  dates[numberOfMonthsPerRow * index + rowIndex],
                 ),
               ),
             ),
@@ -58,15 +52,15 @@ class CalendarYearView extends StatelessWidget {
     return Builder(builder: (context) {
       return InkWell(
         customBorder: const CircleBorder(),
-        onTap: context.read<CalendarAdvancedController>().shouldAllowSelection()
+        onTap: context
+                .read<CalendarAdvancedController>()
+                .shouldAllowSelection(date)
             ? () {
                 context.read<CalendarAdvancedController>().selectDate(date);
               }
             : null,
         child: calendarCellBuilder(
-            date,
-            context.read<CalendarAdvancedController>().isDateSelected(date),
-            context.read<CalendarAdvancedController>().mode),
+            date, context.read<CalendarAdvancedController>()),
       );
     });
   }

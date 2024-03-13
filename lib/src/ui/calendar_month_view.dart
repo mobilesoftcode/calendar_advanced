@@ -4,11 +4,12 @@ import 'package:provider/provider.dart';
 import '../../calendar_advanced.dart';
 
 class CalendarMonthView extends StatelessWidget {
-  final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)
+  final List<CalendarCellContent> Function(
+          DateTime date, CalendarAdvancedController controller)
       calendarCellContentBuilder;
-  final Widget Function(DateTime date, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarDayHeaderBuilder;
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
 
   const CalendarMonthView({
@@ -27,9 +28,6 @@ class CalendarMonthView extends StatelessWidget {
         const Divider(
           height: 0,
         ),
-        const SizedBox(
-          height: 10,
-        ),
         _calendarDates(dates: dates),
       ],
     );
@@ -46,8 +44,7 @@ class CalendarMonthView extends StatelessWidget {
           headerDates.length,
           (index) => Expanded(
             child: calendarDayHeaderBuilder(
-                headerDates[index],
-                context.read<CalendarAdvancedController>().mode),
+                headerDates[index], context.read<CalendarAdvancedController>()),
           ),
         ),
       );
@@ -56,24 +53,20 @@ class CalendarMonthView extends StatelessWidget {
 
   Widget _calendarDates({required List<DateTime> dates}) {
     return Builder(builder: (context) {
-      final daysInWeek =
-          DateTime.daysPerWeek -
+      final daysInWeek = DateTime.daysPerWeek -
           context.read<CalendarAdvancedController>().hiddenWeekdays.length;
       var numberOfWeeks = dates.length / daysInWeek;
 
       return Column(
         children: List.generate(
           numberOfWeeks.ceil(),
-          (index) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                daysInWeek,
-                (rowIndex) => Expanded(
-                  child: _cellBuilder(
-                    dates[daysInWeek * index + rowIndex],
-                  ),
+          (index) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              daysInWeek,
+              (rowIndex) => Expanded(
+                child: _cellBuilder(
+                  dates[daysInWeek * index + rowIndex],
                 ),
               ),
             ),
@@ -86,7 +79,7 @@ class CalendarMonthView extends StatelessWidget {
   Widget _cellBuilder(DateTime date) {
     return Builder(builder: (context) {
       final cellContent = calendarCellContentBuilder(
-          date, context.read<CalendarAdvancedController>().mode);
+          date, context.read<CalendarAdvancedController>());
 
       return Stack(
         alignment: Alignment.center,
@@ -95,25 +88,22 @@ class CalendarMonthView extends StatelessWidget {
             customBorder: const CircleBorder(),
             onTap: context
                     .read<CalendarAdvancedController>()
-                    .shouldAllowSelection()
+                    .shouldAllowSelection(date)
                 ? () {
                     context.read<CalendarAdvancedController>().selectDate(date);
                   }
                 : null,
             child: calendarCellBuilder(
-                date,
-                context.read<CalendarAdvancedController>().isDateSelected(date),
-                context.read<CalendarAdvancedController>().mode),
+                date, context.read<CalendarAdvancedController>()),
           ),
           Row(
-              children: List.generate(
-                  cellContent.length,
-                  (index) => Expanded(
-                      flex: cellContent[index].flex,
-                      child: cellContent[index].content)),
-            ),
-          ],
-        
+            children: List.generate(
+                cellContent.length,
+                (index) => Expanded(
+                    flex: cellContent[index].flex,
+                    child: cellContent[index].content)),
+          ),
+        ],
       );
     });
   }

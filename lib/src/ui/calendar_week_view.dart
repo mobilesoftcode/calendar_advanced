@@ -6,11 +6,12 @@ import 'timetable/calendar_timetable_background_view.dart';
 import 'timetable/calendar_timetable_content_view.dart';
 
 class CalendarWeekView extends StatelessWidget {
-  final List<CalendarCellContent> Function(DateTime date, CalendarMode mode)
+  final List<CalendarCellContent> Function(
+          DateTime date, CalendarAdvancedController controller)
       calendarCellContentBuilder;
-  final Widget Function(DateTime date, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarDayHeaderBuilder;
-  final Widget Function(DateTime date, bool isSelected, CalendarMode mode)
+  final Widget Function(DateTime date, CalendarAdvancedController controller)
       calendarCellBuilder;
   final bool withTimetable;
 
@@ -33,9 +34,6 @@ class CalendarWeekView extends StatelessWidget {
         const Divider(
           height: 0,
         ),
-        const SizedBox(
-          height: 10,
-        ),
         _calendarDates(dates: dates),
       ],
     );
@@ -50,12 +48,11 @@ class CalendarWeekView extends StatelessWidget {
               width: 50,
             ),
           ...List.generate(
-          dates.length,
-          (index) => Expanded(
-            child: calendarDayHeaderBuilder(
-                dates[index],
-                  context.read<CalendarAdvancedController>().mode),
-          ),
+            dates.length,
+            (index) => Expanded(
+              child: calendarDayHeaderBuilder(
+                  dates[index], context.read<CalendarAdvancedController>()),
+            ),
           ),
         ],
       );
@@ -71,12 +68,12 @@ class CalendarWeekView extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(withTimetable ? 50 : 0),
           child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(
-            dates.length,
-            (index) => Expanded(
-              child: _cellBuilder(dates[index]),
-            ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: List.generate(
+              dates.length,
+              (index) => Expanded(
+                child: _cellBuilder(dates[index]),
+              ),
             ),
           ),
         ),
@@ -87,7 +84,7 @@ class CalendarWeekView extends StatelessWidget {
   Widget _cellBuilder(DateTime date) {
     return Builder(builder: (context) {
       final cellContent = calendarCellContentBuilder(
-          date, context.read<CalendarAdvancedController>().mode);
+          date, context.read<CalendarAdvancedController>());
 
       return Stack(
         alignment: Alignment.center,
@@ -96,35 +93,32 @@ class CalendarWeekView extends StatelessWidget {
             customBorder: const CircleBorder(),
             onTap: context
                     .read<CalendarAdvancedController>()
-                    .shouldAllowSelection()
+                    .shouldAllowSelection(date)
                 ? () {
                     context.read<CalendarAdvancedController>().selectDate(date);
                   }
                 : null,
             child: calendarCellBuilder(
-                date,
-                context.read<CalendarAdvancedController>().isDateSelected(date),
-                context.read<CalendarAdvancedController>().mode),
+                date, context.read<CalendarAdvancedController>()),
           ),
-            Row(
-              children: List.generate(
-                cellContent.length,
-                (index) {
-                  if (withTimetable) {
-                    return CalendarTimetableContentView(
-                      content: cellContent[index],
-                      timetableRowHeight: _timetableRowHeight,
-                    );
-                  }
+          Row(
+            children: List.generate(
+              cellContent.length,
+              (index) {
+                if (withTimetable) {
+                  return CalendarTimetableContentView(
+                    content: cellContent[index],
+                    timetableRowHeight: _timetableRowHeight,
+                  );
+                }
 
-                  return Expanded(
-                      flex: cellContent[index].flex,
-                      child: cellContent[index].content);
-                },
-              ),
+                return Expanded(
+                    flex: cellContent[index].flex,
+                    child: cellContent[index].content);
+              },
             ),
-          ],
-        
+          ),
+        ],
       );
     });
   }
