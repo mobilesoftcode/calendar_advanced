@@ -195,13 +195,13 @@ class DefaultCalendarHeader extends StatelessWidget {
   /// If tapped, fires appropriate actions, and scroll calendar dates forward.
   Widget _rightIconWidget() {
     return Opacity(
-      opacity: controller.canGoForkward() ? 1 : 0.5,
+      opacity: controller.canGoForward() ? 1 : 0.5,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(1, 3, 3, 3),
         child: Material(
           child: InkWell(
             borderRadius: BorderRadius.circular(5),
-            onTap: controller.canGoForkward() ? controller.goForward : null,
+            onTap: controller.canGoForward() ? controller.goForward : null,
             child: const Padding(
               padding: EdgeInsets.all(12),
               child: Icon(Icons.chevron_right),

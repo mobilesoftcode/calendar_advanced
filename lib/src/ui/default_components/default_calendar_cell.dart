@@ -48,7 +48,9 @@ class DefaultCalendarCell extends StatelessWidget {
       width: 50,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: context.read<CalendarAdvancedController>().initialDate == date
+        border: context.read<CalendarAdvancedController>().initialDate ==
+                    date &&
+                context.read<CalendarAdvancedController>().highlightInitialDate
             ? Border.all(color: Theme.of(context).primaryColor)
             : null,
         color: selected

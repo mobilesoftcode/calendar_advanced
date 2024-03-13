@@ -27,6 +27,12 @@ class CalendarAdvancedController extends ChangeNotifier {
   /// The date that should be visible and highlighted in calendar once initialized. Defaults to today.
   late final DateTime initialDate;
 
+  /// Specify if `initialDate` should be highlighted by default in calendar, when using default cell buidler
+  final bool highlightInitialDate;
+
+  /// Specify if enable swipe gestures in calendar
+  final bool enableSwipeGestures;
+
   /// The initial mode of the calendar. Defaults to [CalendarMode.week].
   final CalendarMode initialMode;
 
@@ -77,6 +83,8 @@ class CalendarAdvancedController extends ChangeNotifier {
     this.selectedDate,
     this.selectedEndDate,
     DateTime? initialDate,
+    this.highlightInitialDate = true,
+    this.enableSwipeGestures = true,
     this.hiddenWeekdays = const [],
     this.startHour = 9,
     this.endHour = 18,
@@ -326,7 +334,7 @@ class CalendarAdvancedController extends ChangeNotifier {
 
   /// Evaluate if the calendar can be scrolled to show more dates forward depending
   /// on calendar `endDate`.
-  bool canGoForkward() {
+  bool canGoForward() {
     if (endDate == null) {
       return true;
     }

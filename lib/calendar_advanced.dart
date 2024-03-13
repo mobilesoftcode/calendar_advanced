@@ -194,9 +194,42 @@ class _CalendarAdvancedState extends State<CalendarAdvanced>
                       context.read<CalendarAdvancedController>()) ??
                   DefaultCalendarHeader.builder(
                       context.watch<CalendarAdvancedController>()),
-              child,
+              context.read<CalendarAdvancedController>().enableSwipeGestures
+                  ? GestureDetector(
+                      onHorizontalDragEnd: (DragEndDetails details) =>
+                          onStripDrag(details,
+                              context.read<CalendarAdvancedController>()),
+                      onVerticalDragEnd: (DragEndDetails details) =>
+                          onStripExpand(details,
+                              context.read<CalendarAdvancedController>()),
+                      child: child,
+                    )
+                  : child,
             ],
           );
         });
+  }
+
+  void onStripDrag(
+      DragEndDetails details, CalendarAdvancedController controller) {
+    if (details.primaryVelocity == 0) return;
+    if (details.primaryVelocity! < 0) {
+      if (controller.canGoForward()) {
+        controller.goForward();
+      }
+    } else {
+      if (controller.canGoBackward()) {
+        controller.goBackward();
+      }
+    }
+  }
+
+  void onStripExpand(
+      DragEndDetails details, CalendarAdvancedController controller) {
+    if (details.primaryVelocity! < 0) {
+      controller.setMode(CalendarMode.week);
+    } else {
+      controller.setMode(CalendarMode.month);
+    }
   }
 }
