@@ -1,3 +1,7 @@
+## 1.0.1
+
+Updated dependencies
+
 ## 1.0.0
 
 * **BREAKING** - Change builder methods to expose `CalendarAdvancedController`
