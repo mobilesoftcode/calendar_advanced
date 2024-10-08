@@ -8,9 +8,9 @@ class DefaultCalendarHeader extends StatelessWidget {
   /// The calendar header with icon buttons to take actions and a title.
   /// It's a container with a 50px height and infinite width.
   const DefaultCalendarHeader({
-    Key? key,
+    super.key,
     required this.controller,
-  }) : super(key: key);
+  });
 
   static Widget builder(CalendarAdvancedController controller) {
     return DefaultCalendarHeader(controller: controller);
