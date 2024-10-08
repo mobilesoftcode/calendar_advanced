@@ -30,11 +30,11 @@ enum CalendarMode {
 class CalendarCellContent {
   /// In case of timetable [CalendarMode], the `content` will be placed
   /// starting at `startHour`, if provided.
-  final double? startHour;
+  final DateTime? startHour;
 
   /// In case of timetable [CalendarMode], the `content` will be placed
   /// ending at `endHour`, if provided.
-  final double? endHour;
+  final DateTime? endHour;
 
   /// The content to show above the widget returned by the `calendarCellBuilder` builder.
   final Widget content;

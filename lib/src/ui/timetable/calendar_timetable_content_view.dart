@@ -11,17 +11,27 @@ class CalendarTimetableContentView extends StatelessWidget {
     required this.timetableRowHeight,
   });
 
-  double _evaluateOffsetForContent({required double initialHour}) {
-    var hourOffset = (content.startHour ?? 0) - initialHour + 0.5;
+  double _evaluateOffsetForContent({required DateTime initialHour}) {
+    var dayOffset = initialHour.copyWith(
+        year: content.startHour?.year,
+        month: content.startHour?.month,
+        day: content.startHour?.day);
+    var hourOffset =
+        (content.startHour ?? initialHour).difference(dayOffset).inHours;
+    var minutesOffset =
+        (content.startHour ?? initialHour).difference(dayOffset).inMinutes;
     if (hourOffset < 0) {
       hourOffset = 0;
     }
-    return timetableRowHeight * hourOffset;
+    return timetableRowHeight * hourOffset +
+        (minutesOffset * 100 / 60) / timetableRowHeight;
   }
 
   double _evaluateHeightForContent() {
-    var duration = (content.endHour ?? 0) - (content.startHour ?? 0);
-    return timetableRowHeight * duration;
+    var duration = (content.endHour ?? content.startHour ?? DateTime.now())
+        .difference(content.startHour ?? DateTime.now())
+        .inMinutes;
+    return timetableRowHeight * (duration / 60);
   }
 
   @override
@@ -31,7 +41,9 @@ class CalendarTimetableContentView extends StatelessWidget {
       child: Container(
           margin: EdgeInsets.only(
             top: _evaluateOffsetForContent(
-              initialHour: context.read<CalendarAdvancedController>().startHour,
+              initialHour:
+                  context.read<CalendarAdvancedController>().startHour ??
+                      DateTime.now().copyWith(hour: 9),
             ),
           ),
           height: _evaluateHeightForContent(),
