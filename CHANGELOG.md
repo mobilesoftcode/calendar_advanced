@@ -1,3 +1,8 @@
+## 1.0.2
+
+* Changed `startHour` and `endHour` type from _double_ to _DateTime_
+* Updated dependencies
+
 ## 1.0.1
 
 Updated dependencies
