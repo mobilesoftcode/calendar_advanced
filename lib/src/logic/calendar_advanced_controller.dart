@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../calendar_advanced.dart';
-import '../../utils/utility.dart';
 
 import '../../utils/helpers/date_helper.dart';
 
@@ -14,10 +13,10 @@ class CalendarAdvancedController extends ChangeNotifier {
   final DateTime? endDate;
 
   /// The initial hour of the calendar timetable. Defaults to 9.
-  final double startHour;
+  final DateTime? startHour;
 
   /// The last hour of the calendar timetable. Defaults to 18.
-  final double endHour;
+  final DateTime? endHour;
 
   /// Used to specify days to hide in the calendar (i.e. weekends).
   ///
@@ -86,8 +85,8 @@ class CalendarAdvancedController extends ChangeNotifier {
     this.highlightInitialDate = true,
     this.enableSwipeGestures = true,
     this.hiddenWeekdays = const [],
-    this.startHour = 9,
-    this.endHour = 18,
+    this.startHour,
+    this.endHour,
     this.initialMode = CalendarMode.week,
     this.onScrollCalendar,
     this.onSelectTimeSlot,
@@ -100,7 +99,8 @@ class CalendarAdvancedController extends ChangeNotifier {
             endDate == null),
         assert(hiddenWeekdays.length < 7),
         assert(hiddenWeekdays.every((element) => element <= 7)),
-        assert(startHour < endHour) {
+        assert((startHour == null || endHour == null) ||
+            (startHour.compareTo(endHour) < 0)) {
     this.initialDate = initialDate ?? DateTime.now().getDateOnly();
     mode = initialMode;
     _evaluateInitialVisibleDates(this.initialDate);
@@ -453,8 +453,18 @@ class CalendarAdvancedController extends ChangeNotifier {
   List<String> getTimetableHours() {
     List<String> hours = [];
     int index = 0;
-    while (!hours.contains(endHour.convertToTime())) {
-      hours.add((startHour + index).convertToTime());
+    var end = (endHour?.hour ?? 18).toString();
+    if (end.length < 2) {
+      end = "0$end";
+    }
+    end = "$end:00";
+
+    while (!hours.contains(end)) {
+      var hour = ((startHour?.hour ?? 9) + index).toString();
+      if (hour.length < 2) {
+        hour = "0$hour";
+      }
+      hours.add("$hour:00");
       index++;
     }
 
