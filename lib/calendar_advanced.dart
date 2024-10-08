@@ -111,13 +111,13 @@ class CalendarAdvanced extends StatefulWidget {
   ///
   /// The cell appearance will change according to the screen size.
   const CalendarAdvanced({
-    Key? key,
+    super.key,
     this.controller,
     this.calendarCellBuilder,
     this.calendarCellContentBuilder,
     this.calendarDayHeaderBuilder,
     this.calendarHeaderBuilder,
-  }) : super(key: key);
+  });
 
   @override
   State<CalendarAdvanced> createState() => _CalendarAdvancedState();

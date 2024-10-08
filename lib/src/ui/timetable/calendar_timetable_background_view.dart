@@ -291,12 +291,11 @@ class CellRenderObject extends SingleChildRenderObjectWidget {
   final int? innerIndex;
 
   const CellRenderObject(
-      {required Widget child,
+      {required Widget super.child,
       required this.rowIndex,
       required this.columnIndex,
       this.innerIndex,
-      Key? key})
-      : super(child: child, key: key);
+      super.key});
 
   @override
   CellRenderProxy createRenderObject(BuildContext context) {
