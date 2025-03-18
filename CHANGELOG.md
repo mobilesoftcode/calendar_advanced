@@ -1,3 +1,8 @@
+## 1.0.3
+
+* Fixed `shouldAllowSelection` method not considering startDate end endDate values properly
+* Updated dependencies
+
 ## 1.0.2
 
 * Changed `startHour` and `endHour` type from _double_ to _DateTime_
