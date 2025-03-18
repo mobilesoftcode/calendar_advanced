@@ -202,10 +202,31 @@ class CalendarAdvancedController extends ChangeNotifier {
   }
 
   /// Returns _true_ if cells should be selectable.
-  bool shouldAllowSelection(DateTime date) =>
-      (onSelectDate != null || onSelectDateRange != null) &&
-      (startDate == null || date.isAfter(startDate!)) &&
-      (endDate == null || date.isBefore(endDate!));
+  bool shouldAllowSelection(DateTime date) {
+    if (onSelectDate == null && onSelectDateRange == null) {
+      return false;
+    }
+    switch (mode) {
+      case CalendarMode.multiYear:
+        return date.year >= (startDate?.year ?? date.year) &&
+            date.year <= (endDate?.year ?? date.year);
+      case CalendarMode.year:
+        if (date.year > (startDate?.year ?? date.year - 1) &&
+            date.year < (endDate?.year ?? date.year + 1)) {
+          return true;
+        }
+
+        if (date.year == startDate?.year) {
+          return date.month >= (startDate?.month ?? date.month);
+        }
+        if (date.year == endDate?.year) {
+          return date.month <= (endDate?.month ?? date.month);
+        }
+      default:
+    }
+    return (startDate == null || date.isAfter(startDate!)) &&
+        (endDate == null || date.isBefore(endDate!));
+  }
 
   /// Select the provided date, updating the calendar UI. Furthermore,
   /// fires the callback set by the user (either single date or date ragne).
